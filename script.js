@@ -9,7 +9,7 @@ const outputButton = document.getElementById('output-button');
 const outputArea = document.getElementById('output-area');
 
 // ------------------------------------------------------------------
-// ⭐ 永続化機能: データのロードと保存 ⭐
+// 永続化機能: データのロードと保存
 // ------------------------------------------------------------------
 
 /**
@@ -61,7 +61,7 @@ function renderButtons() {
         const wrapper = document.createElement('div');
         wrapper.classList.add('counter-wrapper');
         
-        // ⭐ アイテム名表示エリアの作成 ⭐
+        // アイテム名表示エリアの作成
         const nameSpan = document.createElement('div');
         nameSpan.classList.add('item-name');
         nameSpan.id = `name-${index}`; // IDを追加
@@ -111,7 +111,7 @@ function renderButtons() {
 }
 
 // ------------------------------------------------------------------
-// ⭐ アイテム名カスタマイズ機能: 編集モードの処理 ⭐
+// アイテム名カスタマイズ機能: 編集モードの処理
 // ------------------------------------------------------------------
 
 /**
@@ -175,7 +175,7 @@ function updateCounter(index, amount) {
         counters[index].count = 0;
     }
     
-    saveCounters(); // ⭐ 永続化: カウント更新後に保存 ⭐
+    saveCounters(); // 永続化: カウント更新後に保存
     
     // DOM（表示）の更新
     const countDisplay = document.getElementById(`count-${index}`);
@@ -206,7 +206,7 @@ function resetAllCounters() {
         item.count = 0;
     });
 
-    saveCounters(); // ⭐ 永続化: リセット後に保存 ⭐
+    saveCounters(); // 永続化: リセット後に保存
 
     // DOM（表示）の更新
     counters.forEach((item, index) => {
@@ -225,7 +225,7 @@ resetButton.addEventListener('click', resetAllCounters);
 
 
 // ------------------------------------------------------------------
-// 機能 2: 個別アイテム名出力機能
+// ⭐ 機能 2: 個別アイテム名出力機能 (ファイル名修正) ⭐
 // ------------------------------------------------------------------
 
 /**
@@ -251,8 +251,11 @@ function downloadItemName(itemName) {
                       String(now.getHours()).padStart(2, '0') + 
                       String(now.getMinutes()).padStart(2, '0') + 
                       String(now.getSeconds()).padStart(2, '0');
-                      
-    a.download = `clicked_${itemName.replace(/\s/g, '_')}_${timestamp}.txt`; 
+    
+    // ⭐ ファイル名にアイテム名を付与 ⭐
+    // アイテム名に含まれるスペースをアンダースコアに変換し、ファイル名に含める
+    const fileNamePart = itemName.replace(/[^a-zA-Z0-9_]/g, ''); // ファイル名に使用できない文字を除去
+    a.download = `${fileNamePart}_${timestamp}.txt`; 
     
     a.href = window.URL.createObjectURL(blob);
     a.click();
@@ -263,7 +266,7 @@ function downloadItemName(itemName) {
 
 
 // ------------------------------------------------------------------
-// 機能 3: カウント一覧出力機能
+// ⭐ 機能 3: カウント一覧出力機能 (ファイル名修正) ⭐
 // ------------------------------------------------------------------
 
 /**
@@ -290,7 +293,8 @@ function outputCountList() {
                       String(now.getMinutes()).padStart(2, '0') + 
                       String(now.getSeconds()).padStart(2, '0');
                       
-    a.download = `count_list_${timestamp}.txt`;
+    // ⭐ ファイル名に 'all' を付与 ⭐
+    a.download = `count_list_all_${timestamp}.txt`;
     
     a.href = window.URL.createObjectURL(blob);
     a.click();
