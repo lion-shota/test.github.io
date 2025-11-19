@@ -263,12 +263,12 @@ function downloadItemName(itemName) {
     
     const timestamp = generateTimestamp();
     
-    // ⭐ 修正: ファイル名に使用できない文字のみを除去し、それ以外（日本語を含む）は残す ⭐
-    // Windows/Macで問題となる主要な記号 (\ / : * ? " < > |) と制御文字をアンダースコアに置換する
+    // ⭐ 修正: ファイル名の先頭にタイムスタンプを配置 ⭐
+    // ファイル名に使用できない文字のみを除去
     const safeItemName = itemName.replace(/[\\/:*?"<>|]/g, '_'); 
     
-    // ファイル名: アイテム名_YYYYMMDDhhmmss.txt
-    a.download = `${safeItemName}_${timestamp}.txt`; 
+    // ファイル名: YYYYMMDDhhmmss_アイテム名.txt
+    a.download = `${timestamp}_${safeItemName}.txt`; 
     
     a.href = window.URL.createObjectURL(blob);
     a.click();
@@ -279,7 +279,7 @@ function downloadItemName(itemName) {
 
 
 // ------------------------------------------------------------------
-// 機能 3: カウント一覧出力機能
+// ⭐ 機能 3: カウント一覧出力機能 (ファイル名修正) ⭐
 // ------------------------------------------------------------------
 
 /**
@@ -300,8 +300,9 @@ function outputCountList() {
     
     const timestamp = generateTimestamp();
                       
-    // ファイル名: all_YYYYMMDDhhmmss.txt
-    a.download = `all_${timestamp}.txt`;
+    // ⭐ 修正: ファイル名の先頭にタイムスタンプを配置 ⭐
+    // ファイル名: YYYYMMDDhhmmss_all.txt
+    a.download = `${timestamp}_all.txt`;
     
     a.href = window.URL.createObjectURL(blob);
     a.click();
