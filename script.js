@@ -46,7 +46,6 @@ function saveCounters() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(counters));
 }
 
-
 // ------------------------------------------------------------------
 // ボタン描画機能
 // ------------------------------------------------------------------
@@ -225,6 +224,23 @@ resetButton.addEventListener('click', resetAllCounters);
 
 
 // ------------------------------------------------------------------
+// ⭐ 共通処理: YYYYMMDDhhmmss形式のタイムスタンプ生成 ⭐
+// ------------------------------------------------------------------
+
+function generateTimestamp() {
+    const now = new Date();
+    
+    // YYYYMMDDhhmmss 形式を生成
+    return String(now.getFullYear()) + 
+           String(now.getMonth() + 1).padStart(2, '0') + 
+           String(now.getDate()).padStart(2, '0') + 
+           String(now.getHours()).padStart(2, '0') + 
+           String(now.getMinutes()).padStart(2, '0') + 
+           String(now.getSeconds()).padStart(2, '0');
+}
+
+
+// ------------------------------------------------------------------
 // ⭐ 機能 2: 個別アイテム名出力機能 (ファイル名修正) ⭐
 // ------------------------------------------------------------------
 
@@ -245,15 +261,10 @@ function downloadItemName(itemName) {
     const blob = new Blob([outputText], { type: 'text/plain' });
     const a = document.createElement('a');
     
-    const timestamp = now.getFullYear() + 
-                      String(now.getMonth() + 1).padStart(2, '0') + 
-                      String(now.getDate()).padStart(2, '0') + 
-                      String(now.getHours()).padStart(2, '0') + 
-                      String(now.getMinutes()).padStart(2, '0') + 
-                      String(now.getSeconds()).padStart(2, '0');
+    // ⭐ 修正: YYYYMMDDhhmmss 形式のタイムスタンプを使用 ⭐
+    const timestamp = generateTimestamp();
     
-    // ⭐ ファイル名にアイテム名を付与 ⭐
-    // アイテム名に含まれるスペースをアンダースコアに変換し、ファイル名に含める
+    // ファイル名: アイテム名_YYYYMMDDhhmmss.txt
     const fileNamePart = itemName.replace(/[^a-zA-Z0-9_]/g, ''); // ファイル名に使用できない文字を除去
     a.download = `${fileNamePart}_${timestamp}.txt`; 
     
@@ -285,16 +296,11 @@ function outputCountList() {
     const blob = new Blob([outputText], { type: 'text/plain' });
     const a = document.createElement('a');
     
-    const now = new Date();
-    const timestamp = now.getFullYear() + 
-                      '-' + String(now.getMonth() + 1).padStart(2, '0') + 
-                      '-' + String(now.getDate()).padStart(2, '0') + 
-                      '_' + String(now.getHours()).padStart(2, '0') + 
-                      String(now.getMinutes()).padStart(2, '0') + 
-                      String(now.getSeconds()).padStart(2, '0');
+    // ⭐ 修正: YYYYMMDDhhmmss 形式のタイムスタンプを使用 ⭐
+    const timestamp = generateTimestamp();
                       
-    // ⭐ ファイル名に 'all' を付与 ⭐
-    a.download = `count_list_all_${timestamp}.txt`;
+    // ファイル名: all_YYYYMMDDhhmmss.txt
+    a.download = `all_${timestamp}.txt`;
     
     a.href = window.URL.createObjectURL(blob);
     a.click();
