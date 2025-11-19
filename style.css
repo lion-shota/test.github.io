@@ -1,0 +1,125 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    background-color: #f4f4f9;
+}
+
+h1 {
+    color: #333;
+}
+
+/* --- コントロールボタンコンテナのスタイル --- */
+.controls-container {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.control-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #28a745; /* 緑色 */
+    color: white;
+}
+
+.control-button:hover {
+    background-color: #1e7e34;
+}
+
+#reset-button {
+    background-color: #dc3545; /* 赤色 */
+}
+
+#reset-button:hover {
+    background-color: #c82333;
+}
+
+/* --- ボタンコンテナ: 5x4 グリッドレイアウト --- */
+.button-container {
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 10px; /* スペースをさらに詰める */
+    width: 90%; 
+    max-width: 650px; /* 全体の幅をさらに縮小 */
+    margin-top: 10px;
+    justify-content: center;
+}
+
+/* --- ⭐ 修正部分: 個々のボタンのスタイル ⭐ --- */
+/* 各ボタンのラッパー（項目全体） */
+.counter-wrapper {
+    /* サイズをさらに小型化 */
+    width: 150px; 
+    height: 150px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden; /* 子要素の角丸に対応 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    display: flex; /* 縦にアイテム名、カウント、コントロールを並べる */
+    flex-direction: column;
+}
+
+.item-name {
+    font-size: 0.9em;
+    font-weight: bold;
+    padding: 5px 0;
+    color: #333;
+    text-align: center;
+}
+
+/* カウント表示部分 */
+.count-display {
+    font-size: 2em;
+    font-weight: bold;
+    color: #007bff;
+    text-align: center;
+    flex-grow: 1; /* 残りのスペースを埋める */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+/* カウントアップ・ダウン コントロール部分 */
+.control-panel {
+    display: flex;
+    height: 40px; /* 高さを固定 */
+}
+
+/* カウントアップ/ダウンボタン */
+.count-control-button {
+    flex-basis: 50%; /* 2分割 */
+    border: none;
+    cursor: pointer;
+    font-size: 1.5em;
+    font-weight: bold;
+    transition: background-color 0.1s;
+    color: white;
+}
+
+.increment {
+    background-color: #28a745; /* 緑色 (プラス) */
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.decrement {
+    background-color: #dc3545; /* 赤色 (マイナス) */
+}
+
+.increment:hover {
+    background-color: #1e7e34;
+}
+
+.decrement:hover {
+    background-color: #c82333;
+}
+/*
