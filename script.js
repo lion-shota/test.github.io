@@ -40,7 +40,7 @@ function renderButtons() {
         decrementButton.classList.add('count-control-button', 'decrement');
         decrementButton.textContent = '－';
         decrementButton.addEventListener('click', () => {
-            // カウントを -1 する
+            // カウントを -1 する (ファイル出力は行わない)
             updateCounter(index, -1);
         });
 
@@ -49,7 +49,7 @@ function renderButtons() {
         incrementButton.classList.add('count-control-button', 'increment');
         incrementButton.textContent = '＋';
         incrementButton.addEventListener('click', () => {
-            // カウントを +1 する
+            // カウントを +1 する 
             updateCounter(index, 1);
         });
         
@@ -65,6 +65,10 @@ function renderButtons() {
         container.appendChild(wrapper);
     });
 }
+
+// ------------------------------------------------------------------
+// ⭐ 修正/追加: カウント更新とアイテム名出力の処理
+// ------------------------------------------------------------------
 
 /**
  * 指定されたインデックスのカウンタを指定量更新し、表示を更新する関数
@@ -85,6 +89,47 @@ function updateCounter(index, amount) {
     if (countDisplay) {
         countDisplay.textContent = counters[index].count;
     }
+
+    // ⭐ カウントアップ時のみ、アイテム名をファイル出力 ⭐
+    if (amount > 0) {
+        downloadItemName(counters[index].name);
+    }
+}
+
+/**
+ * クリックされたアイテム名と日時を記録したテキストファイルをダウンロードする関数
+ * @param {string} itemName - クリックされたアイテムの名前
+ */
+function downloadItemName(itemName) {
+    const now = new Date();
+    const formattedTime = now.toLocaleTimeString('ja-JP', {
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit'
+    });
+    
+    const outputText = `アイテム名: ${itemName}\nクリック日時: ${now.toLocaleDateString('ja-JP')} ${formattedTime}\n`;
+
+    const blob = new Blob([outputText], { type: 'text/plain' });
+    const a = document.createElement('a');
+    
+    // ダウンロードするファイル名を「アイテム名_日時.txt」として設定
+    const timestamp = now.getFullYear() + 
+                      String(now.getMonth() + 1).padStart(2, '0') + 
+                      String(now.getDate()).padStart(2, '0') + 
+                      String(now.getHours()).padStart(2, '0') + 
+                      String(now.getMinutes()).padStart(2, '0') + 
+                      String(now.getSeconds()).padStart(2, '0');
+                      
+    // ファイル名には、アイテム名とクリック時刻を含める
+    a.download = `clicked_${itemName.replace(/\s/g, '_')}_${timestamp}.txt`; 
+    
+    a.href = window.URL.createObjectURL(blob);
+    a.click();
+    window.URL.revokeObjectURL(a.href);
+
+    // 出力エリアにメッセージを表示
+    outputArea.textContent = `アイテム「${itemName}」の記録ファイル「${a.download}」をダウンロードしました。`;
 }
 
 
@@ -123,7 +168,7 @@ resetButton.addEventListener('click', resetAllCounters);
 
 
 // ------------------------------------------------------------------
-// 機能 2: カウント一覧をテキストファイルとしてダウンロードする機能
+// 機能 2: カウント一覧をテキストファイルとしてダウンロードする機能 (既存機能)
 // ------------------------------------------------------------------
 
 /**
@@ -132,25 +177,17 @@ resetButton.addEventListener('click', resetAllCounters);
 function outputCountList() {
     let outputText = '=== カウント一覧表 ===\n\n';
     
-    // 最大の項目名長を計算し、整形のために使う
     const maxNameLength = counters.reduce((max, item) => Math.max(max, item.name.length), 0);
     
-    // 各項目の名前とカウントをテキストに追加
     counters.forEach(item => {
-        // 項目名の後にスペースを挿入してカウントの桁を揃える
         const padding = ' '.repeat(maxNameLength - item.name.length + 3);
         outputText += `${item.name}${padding}: ${item.count} 回\n`;
     });
 
-    // 1. Blob（バイナリラージオブジェクト）を生成
     const blob = new Blob([outputText], { type: 'text/plain' });
-    
-    // 2. ダウンロードリンク要素を一時的に作成
     const a = document.createElement('a');
     
-    // 3. ダウンロードするファイル名を設定 (タイムスタンプを追加)
     const now = new Date();
-    // 例: 2025-11-19_155702 の形式でタイムスタンプを生成
     const timestamp = now.getFullYear() + 
                       '-' + String(now.getMonth() + 1).padStart(2, '0') + 
                       '-' + String(now.getDate()).padStart(2, '0') + 
@@ -158,18 +195,12 @@ function outputCountList() {
                       String(now.getMinutes()).padStart(2, '0') + 
                       String(now.getSeconds()).padStart(2, '0');
                       
-    a.download = `count_list_${timestamp}.txt`; // ファイル名にタイムスタンプを追加
+    a.download = `count_list_${timestamp}.txt`;
     
-    // 4. BlobからURLを生成し、リンクのhref属性に設定
     a.href = window.URL.createObjectURL(blob);
-    
-    // 5. リンクをシミュレート的にクリックしてダウンロードを開始
     a.click();
-    
-    // 6. 不要になったURLを解放
     window.URL.revokeObjectURL(a.href);
 
-    // 出力エリアにメッセージを表示
     outputArea.textContent = `ファイル「${a.download}」のダウンロードを開始しました。`;
 }
 
