@@ -224,7 +224,7 @@ resetButton.addEventListener('click', resetAllCounters);
 
 
 // ------------------------------------------------------------------
-// ⭐ 共通処理: YYYYMMDDhhmmss形式のタイムスタンプ生成 ⭐
+// 共通処理: YYYYMMDDhhmmss形式のタイムスタンプ生成
 // ------------------------------------------------------------------
 
 function generateTimestamp() {
@@ -261,12 +261,14 @@ function downloadItemName(itemName) {
     const blob = new Blob([outputText], { type: 'text/plain' });
     const a = document.createElement('a');
     
-    // ⭐ 修正: YYYYMMDDhhmmss 形式のタイムスタンプを使用 ⭐
     const timestamp = generateTimestamp();
     
+    // ⭐ 修正: ファイル名に使用できない文字のみを除去し、それ以外（日本語を含む）は残す ⭐
+    // Windows/Macで問題となる主要な記号 (\ / : * ? " < > |) と制御文字をアンダースコアに置換する
+    const safeItemName = itemName.replace(/[\\/:*?"<>|]/g, '_'); 
+    
     // ファイル名: アイテム名_YYYYMMDDhhmmss.txt
-    const fileNamePart = itemName.replace(/[^a-zA-Z0-9_]/g, ''); // ファイル名に使用できない文字を除去
-    a.download = `${fileNamePart}_${timestamp}.txt`; 
+    a.download = `${safeItemName}_${timestamp}.txt`; 
     
     a.href = window.URL.createObjectURL(blob);
     a.click();
@@ -277,7 +279,7 @@ function downloadItemName(itemName) {
 
 
 // ------------------------------------------------------------------
-// ⭐ 機能 3: カウント一覧出力機能 (ファイル名修正) ⭐
+// 機能 3: カウント一覧出力機能
 // ------------------------------------------------------------------
 
 /**
@@ -296,7 +298,6 @@ function outputCountList() {
     const blob = new Blob([outputText], { type: 'text/plain' });
     const a = document.createElement('a');
     
-    // ⭐ 修正: YYYYMMDDhhmmss 形式のタイムスタンプを使用 ⭐
     const timestamp = generateTimestamp();
                       
     // ファイル名: all_YYYYMMDDhhmmss.txt
