@@ -1,13 +1,55 @@
-// アイテム数を20個に増やす
-const counters = [];
-for (let i = 1; i <= 20; i++) {
-    counters.push({ name: `アイテム${i}`, count: 0 });
-}
+// ⭐ データの永続化: localStorageのキーを定義 ⭐
+const STORAGE_KEY = 'clickCounterApp_data';
+
+let counters = [];
 
 const container = document.querySelector('.button-container');
 const resetButton = document.getElementById('reset-button');
 const outputButton = document.getElementById('output-button');
 const outputArea = document.getElementById('output-area');
+
+// ------------------------------------------------------------------
+// ⭐ 永続化機能: データのロードと保存 ⭐
+// ------------------------------------------------------------------
+
+/**
+ * localStorageからデータをロードする関数
+ */
+function loadCounters() {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+        try {
+            counters = JSON.parse(savedData);
+        } catch (e) {
+            console.error("Failed to parse stored data.", e);
+            initializeDefaultCounters();
+        }
+    } else {
+        initializeDefaultCounters();
+    }
+}
+
+/**
+ * デフォルトの20アイテムを作成する関数
+ */
+function initializeDefaultCounters() {
+    counters = [];
+    for (let i = 1; i <= 20; i++) {
+        counters.push({ name: `アイテム${i}`, count: 0 });
+    }
+}
+
+/**
+ * 現在のデータをlocalStorageに保存する関数
+ */
+function saveCounters() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(counters));
+}
+
+
+// ------------------------------------------------------------------
+// ボタン描画機能
+// ------------------------------------------------------------------
 
 /**
  * すべてのボタン要素を生成し、DOMに追加する関数
@@ -16,40 +58,43 @@ function renderButtons() {
     container.innerHTML = ''; 
 
     counters.forEach((item, index) => {
-        // 1. 全体を包むラッパー要素を作成
         const wrapper = document.createElement('div');
         wrapper.classList.add('counter-wrapper');
         
-        // 2. 項目名
+        // ⭐ アイテム名表示エリアの作成 ⭐
         const nameSpan = document.createElement('div');
         nameSpan.classList.add('item-name');
+        nameSpan.id = `name-${index}`; // IDを追加
         nameSpan.textContent = item.name;
+
+        // アイテム名クリックで編集モードへ
+        nameSpan.addEventListener('click', () => {
+            enterEditMode(index, nameSpan);
+        });
         
-        // 3. カウント表示
+        // カウント表示
         const countDisplay = document.createElement('div');
         countDisplay.classList.add('count-display');
         countDisplay.id = `count-${index}`; 
         countDisplay.textContent = item.count;
 
-        // 4. コントロールパネル (増減ボタンのコンテナ)
+        // コントロールパネル (増減ボタンのコンテナ)
         const controlPanel = document.createElement('div');
         controlPanel.classList.add('control-panel');
 
-        // 5. カウントダウン (-) ボタン
+        // カウントダウン (-) ボタン
         const decrementButton = document.createElement('button');
         decrementButton.classList.add('count-control-button', 'decrement');
         decrementButton.textContent = '－';
         decrementButton.addEventListener('click', () => {
-            // カウントを -1 する (ファイル出力は行わない)
             updateCounter(index, -1);
         });
 
-        // 6. カウントアップ (+) ボタン
+        // カウントアップ (+) ボタン
         const incrementButton = document.createElement('button');
         incrementButton.classList.add('count-control-button', 'increment');
         incrementButton.textContent = '＋';
         incrementButton.addEventListener('click', () => {
-            // カウントを +1 する 
             updateCounter(index, 1);
         });
         
@@ -61,13 +106,60 @@ function renderButtons() {
         wrapper.appendChild(countDisplay);
         wrapper.appendChild(controlPanel);
 
-        // コンテナにラッパーを追加
         container.appendChild(wrapper);
     });
 }
 
 // ------------------------------------------------------------------
-// ⭐ 修正/追加: カウント更新とアイテム名出力の処理
+// ⭐ アイテム名カスタマイズ機能: 編集モードの処理 ⭐
+// ------------------------------------------------------------------
+
+/**
+ * 指定されたアイテムを編集モードに切り替える関数
+ */
+function enterEditMode(index, nameElement) {
+    // 編集モード用の input 要素を作成
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.classList.add('item-name-input');
+    input.value = counters[index].name;
+    input.maxLength = 15; // 最大文字数を設定
+    
+    // 現在の nameElement を input に置き換える
+    nameElement.replaceWith(input);
+    input.focus();
+    
+    // Enterキーを押した、またはフォーカスが外れたら保存
+    const saveName = () => {
+        const newName = input.value.trim() || `アイテム${index + 1}`;
+        counters[index].name = newName;
+        saveCounters(); // 永続化
+        
+        // input を新しい nameElement に置き換える
+        const newNameElement = document.createElement('div');
+        newNameElement.classList.add('item-name');
+        newNameElement.id = `name-${index}`;
+        newNameElement.textContent = newName;
+        
+        // イベントリスナーを再設定
+        newNameElement.addEventListener('click', () => {
+            enterEditMode(index, newNameElement);
+        });
+        
+        input.replaceWith(newNameElement);
+    };
+
+    input.addEventListener('blur', saveName); // フォーカスが外れたら保存
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            saveName();
+        }
+    });
+}
+
+
+// ------------------------------------------------------------------
+// カウント更新機能
 // ------------------------------------------------------------------
 
 /**
@@ -79,10 +171,11 @@ function updateCounter(index, amount) {
     // データの更新
     counters[index].count += amount;
     
-    // マイナス値にならないように制限 (オプション)
     if (counters[index].count < 0) {
         counters[index].count = 0;
     }
+    
+    saveCounters(); // ⭐ 永続化: カウント更新後に保存 ⭐
     
     // DOM（表示）の更新
     const countDisplay = document.getElementById(`count-${index}`);
@@ -90,11 +183,50 @@ function updateCounter(index, amount) {
         countDisplay.textContent = counters[index].count;
     }
 
-    // ⭐ カウントアップ時のみ、アイテム名をファイル出力 ⭐
+    // カウントアップ時のみ、アイテム名をファイル出力
     if (amount > 0) {
         downloadItemName(counters[index].name);
     }
 }
+
+
+// ------------------------------------------------------------------
+// 機能 1: カウンタのリセット機能
+// ------------------------------------------------------------------
+
+/**
+ * すべてのカウンタを0にリセットする関数
+ */
+function resetAllCounters() {
+    if (!confirm("本当に全てのカウントをリセットしますか？")) {
+        return; 
+    }
+    
+    counters.forEach(item => {
+        item.count = 0;
+    });
+
+    saveCounters(); // ⭐ 永続化: リセット後に保存 ⭐
+
+    // DOM（表示）の更新
+    counters.forEach((item, index) => {
+        const countDisplay = document.getElementById(`count-${index}`);
+        if (countDisplay) {
+            countDisplay.textContent = item.count;
+        }
+    });
+
+    outputArea.textContent = '';
+    alert("全てのカウントをリセットしました。");
+}
+
+// リセットボタンにイベントリスナーを設定
+resetButton.addEventListener('click', resetAllCounters);
+
+
+// ------------------------------------------------------------------
+// 機能 2: 個別アイテム名出力機能
+// ------------------------------------------------------------------
 
 /**
  * クリックされたアイテム名と日時を記録したテキストファイルをダウンロードする関数
@@ -113,7 +245,6 @@ function downloadItemName(itemName) {
     const blob = new Blob([outputText], { type: 'text/plain' });
     const a = document.createElement('a');
     
-    // ダウンロードするファイル名を「アイテム名_日時.txt」として設定
     const timestamp = now.getFullYear() + 
                       String(now.getMonth() + 1).padStart(2, '0') + 
                       String(now.getDate()).padStart(2, '0') + 
@@ -121,54 +252,18 @@ function downloadItemName(itemName) {
                       String(now.getMinutes()).padStart(2, '0') + 
                       String(now.getSeconds()).padStart(2, '0');
                       
-    // ファイル名には、アイテム名とクリック時刻を含める
     a.download = `clicked_${itemName.replace(/\s/g, '_')}_${timestamp}.txt`; 
     
     a.href = window.URL.createObjectURL(blob);
     a.click();
     window.URL.revokeObjectURL(a.href);
 
-    // 出力エリアにメッセージを表示
     outputArea.textContent = `アイテム「${itemName}」の記録ファイル「${a.download}」をダウンロードしました。`;
 }
 
 
 // ------------------------------------------------------------------
-// 機能 1: カウンタのリセット機能
-// ------------------------------------------------------------------
-
-/**
- * すべてのカウンタを0にリセットする関数
- */
-function resetAllCounters() {
-    if (!confirm("本当に全てのカウントをリセットしますか？")) {
-        return; // キャンセルされたら処理を中断
-    }
-    
-    // データの更新 (全てを0にする)
-    counters.forEach(item => {
-        item.count = 0;
-    });
-
-    // DOM（表示）の更新
-    counters.forEach((item, index) => {
-        const countDisplay = document.getElementById(`count-${index}`);
-        if (countDisplay) {
-            countDisplay.textContent = item.count;
-        }
-    });
-
-    // 出力エリアもクリアする
-    outputArea.textContent = '';
-    alert("全てのカウントをリセットしました。");
-}
-
-// リセットボタンにイベントリスナーを設定
-resetButton.addEventListener('click', resetAllCounters);
-
-
-// ------------------------------------------------------------------
-// 機能 2: カウント一覧をテキストファイルとしてダウンロードする機能 (既存機能)
+// 機能 3: カウント一覧出力機能
 // ------------------------------------------------------------------
 
 /**
@@ -208,5 +303,16 @@ function outputCountList() {
 outputButton.addEventListener('click', outputCountList);
 
 
-// アプリケーションの開始
-renderButtons();
+// ------------------------------------------------------------------
+// アプリケーションの初期化
+// ------------------------------------------------------------------
+
+/**
+ * アプリのメイン初期化関数
+ */
+function initializeApp() {
+    loadCounters(); // 永続化データからロード
+    renderButtons(); // ボタンを描画
+}
+
+initializeApp();
