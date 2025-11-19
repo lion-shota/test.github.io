@@ -45,35 +45,48 @@ h1 {
 .button-container {
     display: grid; 
     grid-template-columns: repeat(4, 1fr); 
-    gap: 10px; /* スペースをさらに詰める */
+    gap: 10px; 
     width: 90%; 
-    max-width: 650px; /* 全体の幅をさらに縮小 */
+    max-width: 650px; 
     margin-top: 10px;
     justify-content: center;
 }
 
-/* --- ⭐ 修正部分: 個々のボタンのスタイル ⭐ --- */
-/* 各ボタンのラッパー（項目全体） */
+/* --- 個々のボタンのスタイル --- */
 .counter-wrapper {
-    /* サイズをさらに小型化 */
     width: 150px; 
     height: 150px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    overflow: hidden; /* 子要素の角丸に対応 */
+    overflow: hidden; 
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     background-color: #fff;
-    display: flex; /* 縦にアイテム名、カウント、コントロールを並べる */
+    display: flex; 
     flex-direction: column;
 }
 
+/* アイテム名の表示エリア */
 .item-name {
     font-size: 0.9em;
     font-weight: bold;
     padding: 5px 0;
     color: #333;
     text-align: center;
+    cursor: pointer; /* 編集可能であることを示す */
+    min-height: 18px; /* 高さの崩れを防ぐ */
 }
+
+/* ⭐ 新規: アイテム名編集用の入力欄のスタイル ⭐ */
+.item-name-input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #007bff;
+    padding: 3px 0;
+    text-align: center;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+/* ----------------------------------------------- */
 
 /* カウント表示部分 */
 .count-display {
@@ -81,7 +94,7 @@ h1 {
     font-weight: bold;
     color: #007bff;
     text-align: center;
-    flex-grow: 1; /* 残りのスペースを埋める */
+    flex-grow: 1; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -92,12 +105,12 @@ h1 {
 /* カウントアップ・ダウン コントロール部分 */
 .control-panel {
     display: flex;
-    height: 40px; /* 高さを固定 */
+    height: 40px; 
 }
 
 /* カウントアップ/ダウンボタン */
 .count-control-button {
-    flex-basis: 50%; /* 2分割 */
+    flex-basis: 50%; 
     border: none;
     cursor: pointer;
     font-size: 1.5em;
@@ -107,12 +120,12 @@ h1 {
 }
 
 .increment {
-    background-color: #28a745; /* 緑色 (プラス) */
+    background-color: #28a745; 
     border-right: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .decrement {
-    background-color: #dc3545; /* 赤色 (マイナス) */
+    background-color: #dc3545; 
 }
 
 .increment:hover {
@@ -122,4 +135,17 @@ h1 {
 .decrement:hover {
     background-color: #c82333;
 }
-/*
+
+/* --- 出力エリアのスタイル --- */
+#output-area {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    width: 80%;
+    max-width: 700px;
+    min-height: 50px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
