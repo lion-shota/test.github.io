@@ -32,11 +32,12 @@ function loadCounters() {
 }
 
 /**
- * デフォルトの20アイテムを作成する関数
+ * デフォルトのアイテムを作成する関数 (アイテム数: 12個)
  */
 function initializeDefaultCounters() {
     counters = [];
-    for (let i = 1; i <= 20; i++) {
+    // アイテム数を12個に設定
+    for (let i = 1; i <= 12; i++) { 
         counters.push({ name: `アイテム${i}`, count: 0 });
     }
 }
@@ -207,7 +208,8 @@ function resetAllCounters() {
         item.count = 0;
     });
 
-    saveCounters(); // 永続化: リセット後に保存
+    // ⭐ 修正済み: リセット後、localStorage に保存し直す ⭐
+    saveCounters(); 
 
     // DOM（表示）の更新
     counters.forEach((item, index) => {
@@ -241,7 +243,7 @@ function generateTimestamp() {
            String(now.getSeconds()).padStart(2, '0');
 }
 
-// 製品名情報を取得・整形する共通関数
+// 製品名情報を取得・整形する共通関数 (ファイルの内容用)
 function getProductNameHeader() {
     const productName = productNameInput.value.trim();
     if (productName) {
@@ -250,7 +252,7 @@ function getProductNameHeader() {
     return '';
 }
 
-// ⭐ 新規: ファイル名に含める安全な製品名を取得する共通関数 ⭐
+// ファイル名に含める安全な製品名を取得する共通関数
 function getSafeProductName() {
     const productName = productNameInput.value.trim();
     if (productName) {
@@ -264,7 +266,7 @@ function getSafeProductName() {
 
 
 // ------------------------------------------------------------------
-// ⭐ 機能 2: 個別アイテム名出力機能 (ファイル名修正) ⭐
+// 機能 2: 個別アイテム名出力機能
 // ------------------------------------------------------------------
 
 /**
@@ -288,6 +290,8 @@ function downloadItemName(itemName) {
     const a = document.createElement('a');
     
     const timestamp = generateTimestamp();
+    
+    // ファイル名に使用できない文字のみを除去
     const safeItemName = itemName.replace(/[\\/:*?"<>|]/g, '_');
     const safeProductName = getSafeProductName(); // 安全な製品名を取得
 
@@ -310,7 +314,7 @@ function downloadItemName(itemName) {
 
 
 // ------------------------------------------------------------------
-// ⭐ 機能 3: カウント一覧出力機能 (ファイル名修正) ⭐
+// 機能 3: カウント一覧出力機能
 // ------------------------------------------------------------------
 
 /**
