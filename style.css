@@ -41,6 +41,33 @@ h1 {
     background-color: #c82333;
 }
 
+/* ⭐ 新規: 製品名コンテナのスタイル ⭐ */
+.product-name-container {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    width: 90%;
+    max-width: 630px; /* ボタンコンテナの幅に合わせる */
+    text-align: left;
+}
+
+#product-name {
+    width: 70%;
+    padding: 8px;
+    margin-left: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.product-name-container label {
+    font-weight: bold;
+    color: #555;
+}
+/* -------------------------------------- */
+
 /* --- ボタンコンテナ: 5x4 グリッドレイアウト --- */
 .button-container {
     display: grid; 
@@ -72,11 +99,11 @@ h1 {
     padding: 5px 0;
     color: #333;
     text-align: center;
-    cursor: pointer; /* 編集可能であることを示す */
-    min-height: 18px; /* 高さの崩れを防ぐ */
+    cursor: pointer; 
+    min-height: 18px; 
 }
 
-/* ⭐ 新規: アイテム名編集用の入力欄のスタイル ⭐ */
+/* アイテム名編集用の入力欄のスタイル */
 .item-name-input {
     width: 100%;
     box-sizing: border-box;
@@ -86,7 +113,6 @@ h1 {
     font-size: 0.9em;
     font-weight: bold;
 }
-/* ----------------------------------------------- */
 
 /* カウント表示部分 */
 .count-display {
