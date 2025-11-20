@@ -7,6 +7,8 @@ const container = document.querySelector('.button-container');
 const resetButton = document.getElementById('reset-button');
 const outputButton = document.getElementById('output-button');
 const outputArea = document.getElementById('output-area');
+// ⭐ 新規: 製品名入力フィールドの取得 ⭐
+const productNameInput = document.getElementById('product-name');
 
 // ------------------------------------------------------------------
 // 永続化機能: データのロードと保存
@@ -239,9 +241,19 @@ function generateTimestamp() {
            String(now.getSeconds()).padStart(2, '0');
 }
 
+// ⭐ 新規: 製品名情報を取得・整形する共通関数 ⭐
+function getProductNameHeader() {
+    const productName = productNameInput.value.trim();
+    if (productName) {
+        return `製品名: ${productName}\n${'='.repeat(20)}\n\n`;
+    }
+    return '';
+}
+// ------------------------------------------------------------------
+
 
 // ------------------------------------------------------------------
-// ⭐ 機能 2: 個別アイテム名出力機能 (ファイル名修正) ⭐
+// ⭐ 機能 2: 個別アイテム名出力機能 (製品名をテキストに含める) ⭐
 // ------------------------------------------------------------------
 
 /**
@@ -256,14 +268,16 @@ function downloadItemName(itemName) {
         second: '2-digit'
     });
     
-    const outputText = `アイテム名: ${itemName}\nクリック日時: ${now.toLocaleDateString('ja-JP')} ${formattedTime}\n`;
+    // ⭐ 製品名ヘッダーの追加 ⭐
+    let outputText = getProductNameHeader(); 
+    
+    outputText += `アイテム名: ${itemName}\nクリック日時: ${now.toLocaleDateString('ja-JP')} ${formattedTime}\n`;
 
     const blob = new Blob([outputText], { type: 'text/plain' });
     const a = document.createElement('a');
     
     const timestamp = generateTimestamp();
     
-    // ⭐ 修正: ファイル名の先頭にタイムスタンプを配置 ⭐
     // ファイル名に使用できない文字のみを除去
     const safeItemName = itemName.replace(/[\\/:*?"<>|]/g, '_'); 
     
@@ -279,14 +293,17 @@ function downloadItemName(itemName) {
 
 
 // ------------------------------------------------------------------
-// ⭐ 機能 3: カウント一覧出力機能 (ファイル名修正) ⭐
+// ⭐ 機能 3: カウント一覧出力機能 (製品名をテキストに含める) ⭐
 // ------------------------------------------------------------------
 
 /**
  * カウント一覧をテキスト形式で整形し、ファイルとしてダウンロードさせる関数
  */
 function outputCountList() {
-    let outputText = '=== カウント一覧表 ===\n\n';
+    // ⭐ 製品名ヘッダーの追加 ⭐
+    let outputText = getProductNameHeader(); 
+    
+    outputText += '=== カウント一覧表 ===\n\n';
     
     const maxNameLength = counters.reduce((max, item) => Math.max(max, item.name.length), 0);
     
@@ -300,7 +317,6 @@ function outputCountList() {
     
     const timestamp = generateTimestamp();
                       
-    // ⭐ 修正: ファイル名の先頭にタイムスタンプを配置 ⭐
     // ファイル名: YYYYMMDDhhmmss_all.txt
     a.download = `${timestamp}_all.txt`;
     
