@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カウンタアプリ</title>
+    <title>ブラウザ カウンターアプリ</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>ボタンクリックカウンタ</h1>
-
+    <h1>アイテム別 カウントアプリ</h1>
+    
     <div class="controls-container">
-        <button id="reset-button" class="control-button">🔄 全てリセット</button>
-        <button id="output-button" class="control-button">📋 カウント一覧出力</button>
+        <button id="reset-button" class="control-button">すべてリセット</button>
+        <button id="output-button" class="control-button">カウント一覧出力</button>
     </div>
 
+    <div class="product-name-container">
+        <label for="product-name">製品名：</label>
+        <input type="text" id="product-name" placeholder="製品名を入力してください">
+    </div>
     <div class="button-container">
         </div>
 
-    <pre id="output-area"></pre>
+    <pre id="output-area">ファイル出力結果が表示されます。</pre>
 
     <script src="script.js"></script>
 </body>
