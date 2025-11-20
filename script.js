@@ -7,7 +7,7 @@ const container = document.querySelector('.button-container');
 const resetButton = document.getElementById('reset-button');
 const outputButton = document.getElementById('output-button');
 const outputArea = document.getElementById('output-area');
-// ⭐ 新規: 製品名入力フィールドの取得 ⭐
+// 製品名入力フィールドの取得
 const productNameInput = document.getElementById('product-name');
 
 // ------------------------------------------------------------------
@@ -241,7 +241,7 @@ function generateTimestamp() {
            String(now.getSeconds()).padStart(2, '0');
 }
 
-// ⭐ 新規: 製品名情報を取得・整形する共通関数 ⭐
+// 製品名情報を取得・整形する共通関数
 function getProductNameHeader() {
     const productName = productNameInput.value.trim();
     if (productName) {
@@ -249,11 +249,22 @@ function getProductNameHeader() {
     }
     return '';
 }
+
+// ⭐ 新規: ファイル名に含める安全な製品名を取得する共通関数 ⭐
+function getSafeProductName() {
+    const productName = productNameInput.value.trim();
+    if (productName) {
+        // ファイル名に使用できない文字のみを除去し、それ以外（日本語を含む）は残す
+        const safeName = productName.replace(/[\\/:*?"<>|]/g, '_'); 
+        return safeName;
+    }
+    return ''; // 製品名がない場合は空文字列を返す
+}
 // ------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------
-// ⭐ 機能 2: 個別アイテム名出力機能 (製品名をテキストに含める) ⭐
+// ⭐ 機能 2: 個別アイテム名出力機能 (ファイル名修正) ⭐
 // ------------------------------------------------------------------
 
 /**
@@ -268,7 +279,7 @@ function downloadItemName(itemName) {
         second: '2-digit'
     });
     
-    // ⭐ 製品名ヘッダーの追加 ⭐
+    // 製品名ヘッダーの追加
     let outputText = getProductNameHeader(); 
     
     outputText += `アイテム名: ${itemName}\nクリック日時: ${now.toLocaleDateString('ja-JP')} ${formattedTime}\n`;
@@ -277,12 +288,18 @@ function downloadItemName(itemName) {
     const a = document.createElement('a');
     
     const timestamp = generateTimestamp();
+    const safeItemName = itemName.replace(/[\\/:*?"<>|]/g, '_');
+    const safeProductName = getSafeProductName(); // 安全な製品名を取得
+
+    // ファイル名生成: タイムスタンプ_製品名_アイテム名.txt
+    let fileName = `${timestamp}`;
     
-    // ファイル名に使用できない文字のみを除去
-    const safeItemName = itemName.replace(/[\\/:*?"<>|]/g, '_'); 
+    if (safeProductName) {
+        fileName += `_${safeProductName}`;
+    }
+    fileName += `_${safeItemName}.txt`;
     
-    // ファイル名: YYYYMMDDhhmmss_アイテム名.txt
-    a.download = `${timestamp}_${safeItemName}.txt`; 
+    a.download = fileName; 
     
     a.href = window.URL.createObjectURL(blob);
     a.click();
@@ -293,14 +310,14 @@ function downloadItemName(itemName) {
 
 
 // ------------------------------------------------------------------
-// ⭐ 機能 3: カウント一覧出力機能 (製品名をテキストに含める) ⭐
+// ⭐ 機能 3: カウント一覧出力機能 (ファイル名修正) ⭐
 // ------------------------------------------------------------------
 
 /**
  * カウント一覧をテキスト形式で整形し、ファイルとしてダウンロードさせる関数
  */
 function outputCountList() {
-    // ⭐ 製品名ヘッダーの追加 ⭐
+    // 製品名ヘッダーの追加
     let outputText = getProductNameHeader(); 
     
     outputText += '=== カウント一覧表 ===\n\n';
@@ -316,9 +333,17 @@ function outputCountList() {
     const a = document.createElement('a');
     
     const timestamp = generateTimestamp();
+    const safeProductName = getSafeProductName(); // 安全な製品名を取得
                       
-    // ファイル名: YYYYMMDDhhmmss_all.txt
-    a.download = `${timestamp}_all.txt`;
+    // ファイル名生成: タイムスタンプ_製品名_all.txt
+    let fileName = `${timestamp}`;
+    
+    if (safeProductName) {
+        fileName += `_${safeProductName}`;
+    }
+    fileName += `_all.txt`;
+
+    a.download = fileName;
     
     a.href = window.URL.createObjectURL(blob);
     a.click();
